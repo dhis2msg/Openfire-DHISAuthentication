@@ -1,4 +1,4 @@
-package dhis.provider;
+package org.hisp.dhis.provider;
 
 import java.io.*;
 import java.net.HttpURLConnection;

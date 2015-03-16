@@ -1,4 +1,4 @@
-package dhis.provider;
+package org.hisp.dhis.provider;
 
 /**
  * The JSONException is thrown by the JSON.org classes when things are amiss.

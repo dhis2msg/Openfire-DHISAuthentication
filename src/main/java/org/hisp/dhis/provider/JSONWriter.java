@@ -1,4 +1,4 @@
-package dhis.provider;
+package org.hisp.dhis.provider;
 
 import java.io.IOException;
 import java.io.Writer;

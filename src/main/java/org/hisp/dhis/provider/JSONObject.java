@@ -1,4 +1,4 @@
-package dhis.provider;
+package org.hisp.dhis.provider;
 
 /*
  Copyright (c) 2002 JSON.org

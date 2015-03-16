@@ -1,4 +1,4 @@
-package dhis.provider;
+package org.hisp.dhis.provider;
 
 /**
  * The <code>JSONString</code> interface allows a <code>toJSONString()</code>
