@@ -5,8 +5,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.*;
+import javax.security.cert.CertificateException;
+import javax.security.cert.X509Certificate;
 
 import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.jivesoftware.openfire.XMPPServer;
@@ -17,6 +21,8 @@ import org.jivesoftware.openfire.user.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.JID;
+
+
 
 /**
  * @author Niclas Halvorsen & Simon Nguyen Pettersen
@@ -29,10 +35,10 @@ public class DHISAuthProvider implements AuthProvider {
 	String nickname = "";
     String dhisId = "";
     
-    private String DhisURL =  "https://apps.dhis2.org/demo/api/me"; //"https://" + XMPPServer.getInstance().getServerInfo().getXMPPDomain() + "/hmis/api/me";
-    private String GROUP_NAME = "dhis2"; 
-    private String GROUP_DESCRIPTION = "Group for the international dhis2 community";
-    private String DOMAIN = "dhis-international";
+    private String DhisURL =  "https://hmis.moh.gov.rw/hmis/api/me"; //"https://" + XMPPServer.getInstance().getServerInfo().getXMPPDomain() + "/hmis/api/me";
+    private String GROUP_NAME = "hmis-rwanda"; 
+    private String GROUP_DESCRIPTION = "Group for the hmis in Rwanda";
+    private String DOMAIN = "hmis.rwanda";
     
     /*public DHISAuthProvider() {
          DhisURL = org.jivesoftware.util.LocaleUtils.getLocalizedString("dhis.server", "dhis_provider");
@@ -127,7 +133,8 @@ public class DHISAuthProvider implements AuthProvider {
         String authEncoded = Base64.encodeBytes(authStr.getBytes());
         int code = -1;
         String body = "";
-
+     
+        acceptHost();
         HttpsURLConnection connection = null;
         try {
             URL url = new URL(DhisURL);
@@ -144,20 +151,25 @@ public class DHISAuthProvider implements AuthProvider {
             body = readInputStream(connection.getInputStream());
         }
         catch (SocketTimeoutException e) {
+
             e.printStackTrace();
             return false;
         }
         catch (MalformedURLException e) {
+
             e.printStackTrace();
             return false;
         }catch(AuthenticationException e){
+     
         	e.printStackTrace();
         	return false;
         	
         }
         catch (IOException one) {
+
         	return false;
         }catch (Exception e){
+        
         	return false;
         }
         finally {
@@ -200,6 +212,47 @@ public class DHISAuthProvider implements AuthProvider {
         throw new UnauthorizedException("Digest authentication not supported.");
     }
 
+    private static void acceptHost() {
+        try
+        {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                }
+
+                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                }
+
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            }
+            };
+
+            // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            };
+
+            // Install the all-trusting host verifier
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
 
     /*
      * Non modified required AuthProvider methods
