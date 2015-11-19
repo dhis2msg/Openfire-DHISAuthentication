@@ -12,6 +12,7 @@ import javax.net.ssl.*;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
+import net.iharder.Base64;
 import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.auth.AuthProvider;
