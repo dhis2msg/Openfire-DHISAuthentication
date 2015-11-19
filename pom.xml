@@ -8,10 +8,8 @@
     <packaging>jar</packaging>
 
     <name>Openfire DHIS 2 Authenticator</name>
-    <description>
-        Custom Openfire Authentication trough DHIS 2
-    </description>
-    <url>http://maven.apache.org</url>
+    <description>Custom Openfire Authentication through DHIS 2</description>
+    <url>https://github.com/dhis2msg/Openfire-DHISAuthentication</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
