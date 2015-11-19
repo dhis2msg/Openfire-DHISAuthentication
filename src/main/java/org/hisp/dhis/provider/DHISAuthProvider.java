@@ -196,7 +196,7 @@ public class DHISAuthProvider implements AuthProvider {
     }
 
     public void authenticate(String username, String token, String digest) throws UnauthorizedException {
-        throw new UnauthorizedException("Digest authentication not supported.");
+        throw new UnsupportedOperationException("Digest authentication not supported.");
     }
 
     private static void acceptHost() {
