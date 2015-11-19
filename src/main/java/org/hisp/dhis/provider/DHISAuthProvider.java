@@ -41,8 +41,11 @@ public class DHISAuthProvider implements AuthProvider {
     private String nickname = "";
 
     public void authenticate(String username, String password) throws UnauthorizedException {
-        if (username == null || password == null) {
-            throw new UnauthorizedException();
+        if (username == null) {
+            throw new NullPointerException("username cannot be null");
+        }
+        if (password == null) {
+            throw new NullPointerException("password cannot be null");
         }
 
         if (username.contains("@")) {
