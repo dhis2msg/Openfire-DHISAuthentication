@@ -8,17 +8,18 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.net.ssl.HttpsURLConnection;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DHISAuthProviderTest {
 
-    private static final String DHIS_SERVER_URL = System.getProperty("dhis.server.url", "http://localhost:8080");
+    private static final String DHIS_SERVER_URL = System.getProperty("dhis.server.url", "http://localhost:8082");
 
     private static final String USERNAME = "admin";
-    private static final String PASSWORD = "admin";
-    private static final String TOKEN = "admin";
-    private static final String DIGEST = "admin";
+    private static final String PASSWORD = "district";
+
+    private static final String TOKEN = "token";
+    private static final String DIGEST = "digest";
 
     private static final String NOT_EXISTING_USERNAME = "john";
     private static final String WRONG_PASSWORD = "password";
@@ -27,7 +28,7 @@ public class DHISAuthProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        dhisAuthProvider = new DHISAuthProvider();
+        dhisAuthProvider = new DHISAuthProvider(DHIS_SERVER_URL);
     }
 
     @After
@@ -41,7 +42,7 @@ public class DHISAuthProviderTest {
 
         try {
             URL url = new URL(DHIS_SERVER_URL + "/api/me");
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Authorization", "Basic " + authEncoded);
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("GET");
@@ -51,6 +52,7 @@ public class DHISAuthProviderTest {
             connection.connect();
             return connection.getResponseCode() == 200;
         } catch (Exception ex) {
+            ex.printStackTrace();
             return false;
         }
     }

@@ -1,7 +1,6 @@
 package org.hisp.dhis.provider;
 
 import net.iharder.Base64;
-import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.auth.AuthProvider;
 import org.jivesoftware.openfire.auth.UnauthorizedException;
@@ -20,25 +19,35 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * @author Niclas Halvorsen & Simon Nguyen Pettersen
+ * @author Niclas Halvorsen
+ * @author Simon Nguyen Pettersen
+ * @author Tomas Livora
  */
 public class DHISAuthProvider implements AuthProvider {
 
     private static final Logger log = LoggerFactory.getLogger(DHISAuthProvider.class);
 
-    private static final String DHIS_URL = "https://hmis.moh.gov.rw/hmis/api/me"; //"https://" + XMPPServer.getInstance().getServerInfo().getXMPPDomain() + "/hmis/api/me";
-    private static final String GROUP_NAME = "hmis-rwanda";
-    private static final String GROUP_DESCRIPTION = "Group for the hmis in Rwanda";
-    private static final String DOMAIN = "hmis.rwanda";
+    private static final String DHIS_SERVER_URL = System.getProperty("dhis.server.url", "http://localhost:8082");
 
-    private String nickname = "";
+    private static final String GROUP_NAME = System.getProperty("dhis.chat.group.name", "dhis-chat");
+    private static final String GROUP_DESCRIPTION = System.getProperty("dhis.chat.group.description", "DHIS chat");
+    private static final String DOMAIN = System.getProperty("dhis.chat.domain", "org.dhis.chat");
+
+    private final String dhisServerUrl;
+
+    public DHISAuthProvider() {
+        this(DHIS_SERVER_URL);
+    }
+
+    protected DHISAuthProvider(String dhisServerUrl) {
+        this.dhisServerUrl = dhisServerUrl;
+    }
 
     public void authenticate(String username, String password) throws UnauthorizedException {
         if (username == null) {
@@ -64,7 +73,7 @@ public class DHISAuthProvider implements AuthProvider {
         } catch (UserNotFoundException unfe) {
             String email = username + "@" + DOMAIN;
             try {
-                UserManager.getInstance().getUserProvider().createUser(username, password, nickname, null);
+                UserManager.getInstance().getUserProvider().createUser(username, password, username, null);
                 if (user == null) {
                     log.debug("Something went wrong in DHISUserProvider");
                     throw new UnauthorizedException();
@@ -122,18 +131,17 @@ public class DHISAuthProvider implements AuthProvider {
 
     public boolean loginToDhis(String username, String password) {
         log.debug("Trying to login to dhis..");
-        //String formatCredentials = String.format("%s:%s", username, password);
-        //String bytesEncoded = Base64.encodeBytes(formatCredentials.getBytes());      
+
         String authStr = username + ":" + password;
         String authEncoded = Base64.encodeBytes(authStr.getBytes());
         int code = -1;
         String body = "";
 
         acceptHost();
-        HttpsURLConnection connection = null;
+        HttpURLConnection connection = null;
         try {
-            URL url = new URL(DHIS_URL);
-            connection = (HttpsURLConnection) url.openConnection();
+            URL url = new URL(dhisServerUrl);
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Authorization", "Basic " + authEncoded);
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("GET");
@@ -144,24 +152,8 @@ public class DHISAuthProvider implements AuthProvider {
 
             code = connection.getResponseCode();
             body = readInputStream(connection.getInputStream());
-        } catch (SocketTimeoutException e) {
-
-            e.printStackTrace();
-            return false;
-        } catch (MalformedURLException e) {
-
-            e.printStackTrace();
-            return false;
-        } catch (AuthenticationException e) {
-
-            e.printStackTrace();
-            return false;
-
-        } catch (IOException one) {
-
-            return false;
         } catch (Exception e) {
-
+            e.printStackTrace();
             return false;
         } finally {
             if (connection != null) {
@@ -170,16 +162,6 @@ public class DHISAuthProvider implements AuthProvider {
         }
 
         return true;
-    }
-
-    private String setUsername(String body) {
-        try {
-            JSONObject json = new JSONObject(body);
-            nickname = json.getString("firstName") + " " + json.getString("surname");
-        } catch (JSONException e) {
-            nickname = "NoNickname";
-        }
-        return nickname;
     }
 
     private String readInputStream(InputStream stream) throws IOException {
