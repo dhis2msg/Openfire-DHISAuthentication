@@ -134,8 +134,6 @@ public class DHISAuthProvider implements AuthProvider {
 
         String authStr = username + ":" + password;
         String authEncoded = Base64.encodeBytes(authStr.getBytes());
-        int code = -1;
-        String body = "";
 
         acceptHost();
         HttpURLConnection connection = null;
@@ -150,8 +148,7 @@ public class DHISAuthProvider implements AuthProvider {
             connection.setDoInput(true);
             connection.connect();
 
-            code = connection.getResponseCode();
-            body = readInputStream(connection.getInputStream());
+            return connection.getResponseCode() == 200;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -160,8 +157,6 @@ public class DHISAuthProvider implements AuthProvider {
                 connection.disconnect();
             }
         }
-
-        return true;
     }
 
     private String readInputStream(InputStream stream) throws IOException {
