@@ -70,6 +70,7 @@ public class DHISAuthProviderTest {
 
     @Test(expected = UnauthorizedException.class)
     public void testAuthenticateNotExistingUsername() throws Exception {
+        Assume.assumeTrue(isDHISServerRunning());
         dhisAuthProvider.authenticate(NOT_EXISTING_USERNAME, PASSWORD);
     }
 
@@ -80,6 +81,7 @@ public class DHISAuthProviderTest {
 
     @Test(expected = UnauthorizedException.class)
     public void testAuthenticateWrongPassword() throws Exception {
+        Assume.assumeTrue(isDHISServerRunning());
         dhisAuthProvider.authenticate(USERNAME, WRONG_PASSWORD);
     }
 
