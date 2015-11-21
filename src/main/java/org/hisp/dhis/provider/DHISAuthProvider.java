@@ -81,6 +81,7 @@ public class DHISAuthProvider implements AuthProvider {
                     throw new UnauthorizedException();
                 }
             } catch (UserAlreadyExistsException uaee) {
+                uaee.printStackTrace();
             }
         }
 
@@ -112,8 +113,10 @@ public class DHISAuthProvider implements AuthProvider {
                     group.setDescription(GROUP_DESCRIPTION);
                     log.debug("Group: " + group.getName() + " created");
                 } catch (GroupAlreadyExistsException ge) {
+                    ge.printStackTrace();
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             } finally {
                 if (group != null) {
                     if (group.isUser(username)) {
@@ -123,7 +126,7 @@ public class DHISAuthProvider implements AuthProvider {
                         try {
                             groupManager.getProvider().addMember(group.getName(), jid, false);
                         } catch (UnsupportedOperationException e) {
-                            log.debug("UnsupportedOperationException");
+                            e.printStackTrace();
                         }
                     }
                 }
