@@ -15,10 +15,6 @@ import org.xmpp.packet.JID;
 
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
@@ -162,22 +158,6 @@ public class DHISAuthProvider implements AuthProvider {
                 connection.disconnect();
             }
         }
-    }
-
-    private String readInputStream(InputStream stream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        StringBuilder builder = new StringBuilder();
-        try {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-                builder.append('\n');
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return builder.toString();
     }
 
     public void authenticate(String username, String token, String digest) throws UnauthorizedException {
