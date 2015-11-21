@@ -37,7 +37,7 @@ public class DHISAuthProvider implements AuthProvider {
 
     private static final String GROUP_NAME = System.getProperty("dhis.chat.group.name", "dhis-chat");
     private static final String GROUP_DESCRIPTION = System.getProperty("dhis.chat.group.description", "DHIS chat");
-    private static final String DOMAIN = System.getProperty("dhis.chat.domain", "org.dhis.chat");
+    private static final String DOMAIN = System.getProperty("dhis.chat.domain", "dhis.org");
 
     private final String dhisServerUrl;
 
@@ -57,9 +57,12 @@ public class DHISAuthProvider implements AuthProvider {
             throw new NullPointerException("password cannot be null");
         }
 
+        String email;
         if (username.contains("@")) {
-            int index = username.indexOf("@");
-            username = username.substring(0, index);
+            email = username;
+            username = username.split("@")[0];
+        } else {
+            email = username + "@" + DOMAIN;
         }
 
         if (!loginToDhis(username, password)) {
@@ -71,9 +74,8 @@ public class DHISAuthProvider implements AuthProvider {
         try {
             user = userManager.getUser(username);
         } catch (UserNotFoundException unfe) {
-            String email = username + "@" + DOMAIN;
             try {
-                user = UserManager.getInstance().getUserProvider().createUser(username, password, username, null);
+                user = UserManager.getInstance().getUserProvider().createUser(username, password, username, email);
                 if (user == null) {
                     log.debug("Something went wrong in DHISUserProvider");
                     throw new UnauthorizedException();
