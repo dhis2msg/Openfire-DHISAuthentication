@@ -73,7 +73,7 @@ public class DHISAuthProvider implements AuthProvider {
         } catch (UserNotFoundException unfe) {
             String email = username + "@" + DOMAIN;
             try {
-                UserManager.getInstance().getUserProvider().createUser(username, password, username, null);
+                user = UserManager.getInstance().getUserProvider().createUser(username, password, username, null);
                 if (user == null) {
                     log.debug("Something went wrong in DHISUserProvider");
                     throw new UnauthorizedException();
