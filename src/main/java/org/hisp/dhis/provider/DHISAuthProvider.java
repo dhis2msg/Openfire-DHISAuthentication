@@ -33,7 +33,6 @@ public class DHISAuthProvider implements AuthProvider {
 
     private static final String GROUP_NAME = System.getProperty("dhis.chat.group.name", "dhis-chat");
     private static final String GROUP_DESCRIPTION = System.getProperty("dhis.chat.group.description", "DHIS chat");
-    private static final String DOMAIN = System.getProperty("dhis.chat.domain", "dhis.org");
 
     private final String dhisServerUrl;
 
@@ -53,12 +52,10 @@ public class DHISAuthProvider implements AuthProvider {
             throw new NullPointerException("password cannot be null");
         }
 
-        String email;
+        String email = null;
         if (username.contains("@")) {
             email = username;
             username = username.split("@")[0];
-        } else {
-            email = username + "@" + DOMAIN;
         }
 
         if (!loginToDhis(username, password)) {
