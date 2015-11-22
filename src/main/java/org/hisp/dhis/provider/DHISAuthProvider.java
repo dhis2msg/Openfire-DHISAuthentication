@@ -92,8 +92,9 @@ public class DHISAuthProvider implements AuthProvider {
         } else {
             JID jid = new JID(username + "@" + XMPPServer.getInstance().getServerInfo().getXMPPDomain());
             GroupProvider provider = groupManager.getProvider();
-            if (provider == null)
+            if (provider == null) {
                 log.debug("GroupProvider = null: ");
+            }
 
             Group group = null;
 
@@ -142,11 +143,13 @@ public class DHISAuthProvider implements AuthProvider {
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(1500);
-            connection.setInstanceFollowRedirects(false);
+            connection.setInstanceFollowRedirects(true);
             connection.setDoInput(true);
-            connection.connect();
 
-            return connection.getResponseCode() == 200;
+            connection.connect();
+            log.debug("HTTP response code: " + connection.getResponseCode());
+
+            return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

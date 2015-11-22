@@ -47,7 +47,7 @@ public class DHISAuthProviderTest {
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(1500);
-            connection.setInstanceFollowRedirects(false);
+            connection.setInstanceFollowRedirects(true);
             connection.setDoInput(true);
             connection.connect();
             return connection.getResponseCode() == 200;
