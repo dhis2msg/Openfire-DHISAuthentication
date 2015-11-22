@@ -63,7 +63,7 @@ public class DHISAuthProviderTest {
         dhisAuthProvider.authenticate(USERNAME, PASSWORD);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = UnauthorizedException.class)
     public void testAuthenticateNullUsername() throws Exception {
         dhisAuthProvider.authenticate(null, PASSWORD);
     }
@@ -74,7 +74,7 @@ public class DHISAuthProviderTest {
         dhisAuthProvider.authenticate(NOT_EXISTING_USERNAME, PASSWORD);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = UnauthorizedException.class)
     public void testAuthenticateNullPassword() throws Exception {
         dhisAuthProvider.authenticate(USERNAME, null);
     }

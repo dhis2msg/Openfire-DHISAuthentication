@@ -46,10 +46,10 @@ public class DHISAuthProvider implements AuthProvider {
 
     public void authenticate(String username, String password) throws UnauthorizedException {
         if (username == null) {
-            throw new NullPointerException("username cannot be null");
+            throw new UnauthorizedException("username cannot be null");
         }
         if (password == null) {
-            throw new NullPointerException("password cannot be null");
+            throw new UnauthorizedException("password cannot be null");
         }
 
         String email = null;
